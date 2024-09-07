@@ -1,0 +1,15 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web.workspace = true
+deadpool-postgres.workspace = true
+derive_more.workspace = true
+env_logger.workspace = true
+log.workspace = true
+serde.workspace = true
+tokio-pg-mapper.workspace = true
+tokio-pg-mapper-derive.workspace = true
+tokio-postgres.workspace = true

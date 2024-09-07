@@ -1,0 +1,47 @@
+services:
+  account:
+    container_name: account_service
+    image: account:latest
+    build:
+      context: .
+      dockerfile: crates/account/Dockerfile
+    depends_on:
+      - database
+
+  cloudflare:
+    container_name: cloudflare_service
+    image: cloudflare/cloudflared:latest
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TOKEN}
+    depends_on:
+      - nginx
+
+  database:
+    container_name: database_service
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./dataset:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  nginx:
+    container_name: nginx_service
+    image: nginx:alpine
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - account
+      - website
+    ports:
+      - "80:80"
+
+  website:
+    container_name: website_service
+    image: website:latest
+    build:
+      context: .
+      dockerfile: packages/website/Dockerfile
